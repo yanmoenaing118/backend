@@ -7,18 +7,21 @@ const {
   deletePost,
 } = require("./lib/posts");
 const app = express();
-const PORT = 8080;
+const PORT = 4000;
 
 app.use(express.json());
 
 app.get("/api/posts", async (req, res) => {
-  console.log("GET: /posts");
+  console.log("GET --start: /posts");
+  // console.log(req.headers)
   const posts = await getPosts();
+  console.log("GET --end: /posts");
+
   res.json(posts);
 });
 
 app.post("/api/posts", async (req, res) => {
-  console.log("POST: /posts");
+  console.log("POST: /posts", req.body);
   const post = await createPost(req.body);
   res.json(post);
 });
