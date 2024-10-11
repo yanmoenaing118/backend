@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const express = require("express");
+const cors = require("cors");
 const {
   getPosts,
   createPost,
@@ -10,16 +11,23 @@ const {
 } = require("./lib/posts");
 const app = express();
 const PORT = 4000;
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Authorization, Origin, X-Requested-With, Content-Type, Accept"
-  );
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  next();
-});
+
+const allowedOrigins = ["http://localhost:3000"];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if(allowedOrigins.includes(origin) || !origin) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by Cors'))
+    }
+  },
+  credentials: true,
+  method: "GET, HEAD, PUT, PATCH, POST, DELETE"
+};
+
 app.use(express.json());
+app.use(cors(corsOptions))
 
 app.get("/api/posts", async (req, res) => {
   console.log("GET --start: /posts");
@@ -55,6 +63,15 @@ app.delete("/api/posts/:id", async (req, res) => {
 
   await deletePost(req.params.id);
   res.json("success");
+});
+
+
+app.post("/api/signin", async (req, res) => {
+  res.cookie("auth", "xdxdxd");
+
+  res.json({
+    message: "okay",
+  });
 });
 
 app.listen(PORT, () => {
